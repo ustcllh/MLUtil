@@ -18,7 +18,7 @@ class NeuralNet(nn.Module):
         output = self.layer2(output)
         output = self.relu(output)
         output = self.layer3(output)
-        return output
+        return self.relu(output)
 
 def main():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -36,13 +36,14 @@ def main():
     num_epochs = 5
     learning_rate = 0.001
 
-    model = NeuralNet(input_size,hidden_size, output_size)
+    model = NeuralNet(input_size, hidden_size, output_size)
     model = model.to(device)
     print(model)
 
     lossFunction = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     total_step = len(train_loader)
+
 
     for epoch in range(num_epochs):
         for i, (images,labels) in enumerate(train_loader):
@@ -58,9 +59,11 @@ def main():
             loss.backward()
             optimizer.step()
 
-            if (i+1) % 100 == 0:
-                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}' .format(epoch+1, num_epochs, i+1, total_step, loss.item()))
+            # accuracy
+            accuracy = (out.argmax(dim=1) == labels).sum() * 100. / len(labels)
 
+            if (i+1) % 100 == 0:
+                print('Epoch [{}/{}], Step [{}/{}], Accuracy: {:.2f} %' .format(epoch+1, num_epochs, i+1, total_step, accuracy))
 
 
 if __name__ == '__main__':
