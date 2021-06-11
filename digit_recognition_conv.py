@@ -105,7 +105,8 @@ def main():
     model_valid = Net()
 
     # load a well-trained network
-    model_valid.load_state_dict(torch.load(model_path, map_location='cpu'))
+    model_valid.load_state_dict(torch.load(model_path, map_location='cuda:0'))
+    model_valid.to(device)
 
     # use the well-trained network and calculate accuracy
     corr=0
